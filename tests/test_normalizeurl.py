@@ -26,8 +26,3 @@ def test_safely_handle_params():
 	url = 'http://blog.jetbrains.com/kotlin/feed?utm_campaign=twitter'
 	result = normalize_url(url)
 	assert result == 'http://blog.jetbrains.com/kotlin/feed?utm_campaign=twitter'
-
-def test_safely_handle_params_containing_slash():
-	url = 'http://blog.jetbrains.com/kotlin/feed?utm_c/ampaign=t/witter'
-	result = normalize_url(url)
-	assert result == 'http://blog.jetbrains.com/kotlin/feed?utm_c/ampaign=t/witter'
