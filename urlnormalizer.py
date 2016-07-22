@@ -1,54 +1,22 @@
-import argparse
+from urlparser import parse_string, MalformatUrlException
 
-class _UrlBuilder:
-	def __init__(self):
-		self.protocol = ''
-		self.tld = ''
-		self.paths = []
+supported_schemes = ['http', 'https']
 
-	def set_protocol(self, protocol):
-		self.protocol = protocol
+def _validate_url(url):
+	if url.get_scheme().lower() not in supported_schemes:
+		raise InvalidUrlException('Unsupported scheme.')
 
-	def set_tld(self, tld):
-		self.tld = tld
-
-	def add_path(self, path):
-		self.paths.append(path)
-
-	def set_paths(self, paths):
-		self.paths = paths
-
-	def build(self):
-		url = self.protocol + self.tld + '/'
-		url += '/'.join(self.paths)
-		return url
+def normalize_url(input_url):
+	url = parse_string(input_url)
+	try:
+		_validate_url(url)
+	except MalformatUrlException as ex:
+		raise ex
+	builder = url.builder()
+	builder.set_scheme(url.get_scheme().lower())
+	builder.set_host(url.get_host().lower())
+	builder.set_fragment(None)
+	return builder.build().get()
 
 class InvalidUrlException(Exception):
 	pass
-
-def normalize_url(input_url):
-	if not input_url.startswith('https://') and not input_url.startswith('http://'):
-		raise InvalidUrlException('Missing protocol.')
-
-	builder = _UrlBuilder()
-
-	tld_start_idx = input_url.find('://') + 3
-	tld_end_idx = len(input_url) - 1
-	have_paths = input_url[tld_start_idx:].find('/') != -1
-	if have_paths:
-		tld_end_idx = tld_start_idx + input_url[tld_start_idx:].find('/') - 1
-	tld = input_url[tld_start_idx:tld_end_idx + 1]
-	builder.set_tld(tld)
-
-	protocol = input_url[:tld_start_idx]
-	builder.set_protocol(protocol)
-
-	paths = []
-	if have_paths:
-		paths_start_idx = input_url.find(builder.build()) + len(builder.build())
-		paths_section = input_url[paths_start_idx:]
-		paths = paths_section.split('/')
-		paths = [path for path in paths if len(path) > 0]
-	builder.set_paths(paths)
-
-	return builder.build()
