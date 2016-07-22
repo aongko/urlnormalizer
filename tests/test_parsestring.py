@@ -13,6 +13,12 @@ def test_simple_url():
 	assert url.get_host() == 'example.com'
 	assert url.get() == 'http://example.com/'
 
+def test_host_is_ip():
+	url = parse_string('http://203.0.113.1/')
+	assert url.get_scheme() == 'http'
+	assert url.get_host() == '203.0.113.1'
+	assert url.get() == 'http://203.0.113.1/'
+
 def test_simple_url_without_trailing_slash():
 	url = parse_string('http://example.com')
 	assert url.get_scheme() == 'http'
