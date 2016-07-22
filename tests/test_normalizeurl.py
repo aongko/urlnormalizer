@@ -34,5 +34,5 @@ def test_safely_handle_params():
 		'http://example.com/part1/part2?q=query'
 
 def test_fragment_removed():
-	assert normalize_url('http://example.com/#fragment') == \
-		'http://example.com/'
+	assert normalize_url('http://example.com/#fragment') == 'http://example.com/'
+	assert normalize_url('http://example.com/#') == 'http://example.com/'

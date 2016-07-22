@@ -99,6 +99,13 @@ def test_url_with_fragment():
 	assert url.get_fragment() == 'fragment'
 	assert url.get() == 'http://example.com/#fragment'
 
+def test_url_with_empty_fragment():
+	url = parse_string('http://example.com/#')
+	assert url.get_scheme() == 'http'
+	assert url.get_host() == 'example.com'
+	assert url.get_fragment() == ''
+	assert url.get() == 'http://example.com/#'
+
 def test_url():
 	url = parse_string('http://user:password@example.com/path1/path2?q=query&query#fragment')
 	assert url.get_scheme() == 'http'

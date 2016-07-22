@@ -55,7 +55,7 @@ class Url(object):
 				else:
 					queries.append('%s=%s' % query)
 			url += '&'.join(queries)
-		if self._fragment:
+		if self._fragment is not None:
 			url += '#' + self._fragment
 		return url
 
@@ -171,9 +171,10 @@ def parse_string(url_string):
 			parsed_queries.append(tuple(parsed_query))
 		builder.set_queries(parsed_queries)
 
-	fragment_section = url_string[url_string.find('#'):]
-	fragment = fragment_section[1:]
-	builder.set_fragment(fragment)
+	if url_string.find('#') != -1:
+		fragment_section = url_string[url_string.find('#'):]
+		fragment = fragment_section[1:]
+		builder.set_fragment(fragment)
 
 	return builder.build()
 
