@@ -57,8 +57,8 @@ class Url(object):
 			url += '?'
 			queries = []
 			for query in self._queries:
-				if not query[1]:
-					queries.append('%s' % query[0])
+				if len(query) == 1:
+					queries.append('%s' % query)
 				else:
 					queries.append('%s=%s' % query)
 			url += '&'.join(queries)
@@ -152,7 +152,12 @@ def parse_string(url_string):
 	paths = [path for path in path_section.split('/') if path]
 	builder.set_paths(paths)
 
-	parsed_queries = parse_qsl(u.query, True)
+	parsed_queries = []
+	if u.query:
+		queries = u.query.split('&')
+		for query in queries:
+			parsed_query = query.split('=')
+			parsed_queries.append(tuple(parsed_query))
 
 	builder.set_queries(parsed_queries)
 

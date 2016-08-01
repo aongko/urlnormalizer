@@ -14,7 +14,10 @@ def normalize_url(input_url):
 		raise ex
 	builder = url.builder()
 	builder.set_scheme(url.get_scheme().lower())
-	builder.set_host(url.get_host().lower())
+	host = url.get_host().lower()
+	if host.endswith("."):
+		host = host[:-1]
+	builder.set_host(host)
 	builder.set_fragment(None)
 	return builder.build().get()
 
