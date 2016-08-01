@@ -1,3 +1,10 @@
+import sys
+if sys.version_info >= (3, 0):
+	from urllib.parse import urlparse, parse_qsl
+else:
+	from urlparse import urlparse, parse_qsl
+
+
 class Url(object):
 
 	def __init__(self, builder):
@@ -123,58 +130,43 @@ class UrlBuilder(object):
 def parse_string(url_string):
 	builder = UrlBuilder()
 
-	if url_string.find(':') == -1:
-		raise MalformatUrlException('Missing scheme.')
+	u = urlparse(url_string)
+	scheme = u.scheme
 
-	scheme = url_string[:url_string.find(':')]
+	if not scheme:
+		raise MalformatUrlException('Missing scheme.')
 	builder.set_scheme(scheme)
 
-	host_section = url_string[len(scheme+'://'):]
-	if url_string[len(scheme+'://'):].find('/') != -1:
-		host_end = url_string[len(scheme+'://'):].find('/') + len(scheme+'://')
-		host_section = url_string[len(scheme+'://'):host_end]
-	host = host_section
-	if host_section.find('@') != -1:
-		host = host_section[host_section.find('@')+1:]
-		user_section = host_section[:host_section.find('@')]
-		user = user_section
-		if user_section.find(':') != -1:
-			user = user_section[:user_section.find(':')]
-			password = user_section[user_section.find(':')+1:]
-			builder.set_password(password)
-		builder.set_user(user)
-	if host.find(':') != -1:
-		try:
-			port = int(host[host.find(':')+1:])
-		except ValueError:
-			raise MalformatUrlException('Port must be a number.')
-		builder.set_port(port)
-	builder.set_host(host)
+	host = u.hostname
+	user = u.username
+	password = u.password
 
-	path_section = url_string[url_string.find(host)+len(host):]
-	if path_section.find('?') != -1:
-		path_section = path_section[:path_section.find('?')]
-	elif path_section.find('#') != -1 :
-		path_section = path_section[:path_section.find('#')]
-	paths = path_section.split('/')
-	paths = [path for path in paths if len(path) > 0]
+	port = None
+	try:
+		port = u.port
+	except ValueError:
+		raise MalformatUrlException("Port must be a number.")
+
+	builder.set_host(host)
+	builder.set_port(port)
+	builder.set_user(user)
+	builder.set_password(password)
+
+	path_section = u.path
+	paths = [path for path in path_section.split('/') if path]
 	builder.set_paths(paths)
 
-	if url_string.find('?') != -1:
-		query_section = url_string[url_string.find('?')+1:]
-		if query_section.find('#') != -1:
-			query_section = query_section[:query_section.find('#')]
-		queries = query_section.split('&')
-		parsed_queries = []
-		for query in queries:
-			parsed_query = query.split('=')
-			parsed_queries.append(tuple(parsed_query))
-		builder.set_queries(parsed_queries)
+	parsed_queries = []
+	for q in parse_qsl(u.query, True):
+		if not q[1]:
+			parsed_queries.append(tuple([q[0],]))
+		else:
+			parsed_queries.append(q)
+
+	builder.set_queries(parsed_queries)
 
 	if url_string.find('#') != -1:
-		fragment_section = url_string[url_string.find('#'):]
-		fragment = fragment_section[1:]
-		builder.set_fragment(fragment)
+		builder.set_fragment(u.fragment)
 
 	return builder.build()
 
