@@ -19,6 +19,13 @@ def normalize_url(input_url):
 		host = host[:-1]
 	builder.set_host(host)
 	builder.set_fragment(None)
+
+	# remove utm parameters
+	# https://support.google.com/analytics/answer/1033867
+	blacklist = ['utm_source', 'utm_medium', 'utm_term', 'utm_content', 'utm_campaign']
+	queries = filter(lambda x: x[0] not in blacklist, url.get_queries())
+	builder.set_queries(queries)
+
 	return builder.build().get()
 
 class InvalidUrlException(Exception):

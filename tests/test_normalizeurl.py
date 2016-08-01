@@ -36,3 +36,7 @@ def test_safely_handle_params():
 def test_fragment_removed():
 	assert normalize_url('http://example.com/#fragment') == 'http://example.com/'
 	assert normalize_url('http://example.com/#') == 'http://example.com/'
+
+def test_remove_campaign_parameters():
+	assert normalize_url('http://example.com/?utm_source=WP&utm_medium=box&utm_campaign=Khlwp') == \
+		'http://example.com/'
