@@ -57,12 +57,12 @@ class Url(object):
 			url += '?'
 			queries = []
 			for query in self._queries:
-				if len(query) == 1:
-					queries.append('%s' % query)
+				if not query[1]:
+					queries.append('%s' % query[0])
 				else:
 					queries.append('%s=%s' % query)
 			url += '&'.join(queries)
-		if self._fragment is not None:
+		if self._fragment:
 			url += '#' + self._fragment
 		return url
 
@@ -137,36 +137,26 @@ def parse_string(url_string):
 		raise MalformatUrlException('Missing scheme.')
 	builder.set_scheme(scheme)
 
-	host = u.hostname
-	user = u.username
-	password = u.password
-
 	port = None
 	try:
 		port = u.port
 	except ValueError:
 		raise MalformatUrlException("Port must be a number.")
 
-	builder.set_host(host)
+	builder.set_host(u.hostname)
 	builder.set_port(port)
-	builder.set_user(user)
-	builder.set_password(password)
+	builder.set_user(u.username)
+	builder.set_password(u.password)
 
 	path_section = u.path
 	paths = [path for path in path_section.split('/') if path]
 	builder.set_paths(paths)
 
-	parsed_queries = []
-	for q in parse_qsl(u.query, True):
-		if not q[1]:
-			parsed_queries.append(tuple([q[0],]))
-		else:
-			parsed_queries.append(q)
+	parsed_queries = parse_qsl(u.query, True)
 
 	builder.set_queries(parsed_queries)
 
-	if url_string.find('#') != -1:
-		builder.set_fragment(u.fragment)
+	builder.set_fragment(u.fragment)
 
 	return builder.build()
 

@@ -88,14 +88,14 @@ def test_url_with_query_no_value():
 	url = parse_string('http://example.com/?query')
 	assert url.get_scheme() == 'http'
 	assert url.get_host() == 'example.com'
-	assert url.get_queries() == [('query',)]
+	assert url.get_queries() == [('query','')]
 	assert url.get() == 'http://example.com/?query'
 
 def test_url_with_queries():
 	url = parse_string('http://example.com/?q=query&query')
 	assert url.get_scheme() == 'http'
 	assert url.get_host() == 'example.com'
-	assert url.get_queries() == [('q', 'query'), ('query',)]
+	assert url.get_queries() == [('q', 'query'), ('query','')]
 	assert url.get() == 'http://example.com/?q=query&query'
 
 def test_url_with_fragment():
@@ -110,7 +110,7 @@ def test_url_with_empty_fragment():
 	assert url.get_scheme() == 'http'
 	assert url.get_host() == 'example.com'
 	assert url.get_fragment() == ''
-	assert url.get() == 'http://example.com/#'
+	assert url.get() == 'http://example.com/'
 
 def test_url():
 	url = parse_string('http://user:password@example.com/path1/path2?q=query&query#fragment')
@@ -119,6 +119,6 @@ def test_url():
 	assert url.get_password() == 'password'
 	assert url.get_host() == 'example.com'
 	assert url.get_paths() == ['path1', 'path2']
-	assert url.get_queries() == [('q', 'query'), ('query',)]
+	assert url.get_queries() == [('q', 'query'), ('query','')]
 	assert url.get_fragment() == 'fragment'
 	assert url.get() == 'http://user:password@example.com/path1/path2?q=query&query#fragment'
