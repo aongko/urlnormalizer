@@ -112,6 +112,10 @@ def test_url_with_empty_fragment():
 	assert url.get_fragment() == ''
 	assert url.get() == 'http://example.com/#'
 
+def test_queries_sorted():
+	assert parse_string('http://example.com/?param1=param1val&param2=param2val').get_queries() == \
+		parse_string('http://example.com/?param2=param2val&param1=param1val').get_queries()
+
 def test_url():
 	url = parse_string('http://user:password@example.com/path1/path2?q=query&query#fragment')
 	assert url.get_scheme() == 'http'

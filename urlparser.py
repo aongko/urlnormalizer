@@ -103,7 +103,7 @@ class UrlBuilder(object):
 		self._paths = paths
 
 	def set_queries(self, queries):
-		self._queries = queries
+		self._queries = sorted(queries)
 
 	def set_fragment(self, fragment):
 		self._fragment = fragment
