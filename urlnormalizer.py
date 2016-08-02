@@ -15,13 +15,18 @@ def normalize_url(input_url):
 	builder = url.builder()
 	builder.set_scheme(url.get_scheme().lower())
 	builder.set_host(url.get_host().lower())
-	builder.set_fragment(None)
 
 	# remove utm parameters
 	# https://support.google.com/analytics/answer/1033867
 	blacklist = ['utm_source', 'utm_medium', 'utm_term', 'utm_content', 'utm_campaign']
 	queries = filter(lambda x: x[0] not in blacklist, url.get_queries())
+
+	# sort queries
+	queries = sorted(queries)
 	builder.set_queries(queries)
+
+	# remove fragment
+	builder.set_fragment(None)
 
 	return builder.build().get()
 
