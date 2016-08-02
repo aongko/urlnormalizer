@@ -40,3 +40,7 @@ def test_fragment_removed():
 def test_remove_campaign_parameters():
 	assert normalize_url('http://example.com/?utm_source=WP&utm_medium=box&utm_campaign=Khlwp') == \
 		'http://example.com/'
+
+def test_queries_sorted():
+	assert normalize_url('http://example.com/?param1=param1val&param2=param2val') == \
+		normalize_url('http://example.com/?param2=param2val&param1=param1val')
